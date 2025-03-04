@@ -8,23 +8,16 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <h1>Memory Game</h1>
-
-    <div>
-        <label for="difficulty">Сложность: </label>
-        <select id="difficulty">
-            <option value="4">Легко (4 пары)</option>
-            <option value="6" selected>Средне (6 пар)</option>
-            <option value="8">Сложно (8 пар)</option>
-        </select>
+    <div class="container">
+        <h1>Memory Challenge</h1>
+        <div id="level-info">Уровень: 1</div>
+        <div id="game-info">
+            <span id="timer">⏳ 60s</span>
+            <span id="moves">🔄 0</span>
+        </div>
+        <div id="game-board"></div>
+        <button id="restart">🔁 Перезапуск</button>
     </div>
-
-    <p id="timer">Время: 60s</p>
-    <p id="moves">Ходы: 0</p>
-
-    <div id="game-board"></div>
-    <button id="restart">Restart</button>
-    
     <script src="script.js"></script>
 </body>
 </html>
