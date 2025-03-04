@@ -2,6 +2,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const Telegram = window.Telegram.WebApp;
     Telegram.ready();
     
+    // Устанавливаем цвет заголовка и разворачиваем WebView
+    Telegram.setHeaderColor("secondary_bg_color"); 
+    Telegram.expand(); 
+    
     const gameBoard = document.getElementById("game-board");
     const restartButton = document.getElementById("restart");
 
