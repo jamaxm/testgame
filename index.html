@@ -1,17 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory Game</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-</head>
-<body>
-    <h1>Memory Game</h1>
-    <div id="game-board"></div>
-    <button id="restart">Restart</button>
-    
-    <script src="script.js"></script>
-</body>
-</html>
+<div>
+    <label for="difficulty">Сложность: </label>
+    <select id="difficulty">
+        <option value="4">Легко (4 пары)</option>
+        <option value="6" selected>Средне (6 пар)</option>
+        <option value="8">Сложно (8 пар)</option>
+    </select>
+</div>
+<p id="timer">Время: 60s</p>
+<p id="moves">Ходы: 0</p>
+<div id="game-board"></div>
+<button id="restart">Начать заново</button>
