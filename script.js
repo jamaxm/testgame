@@ -1,40 +1,54 @@
 document.addEventListener("DOMContentLoaded", () => {
     const Telegram = window.Telegram.WebApp;
-    Telegram.ready();
-    Telegram.WebApp.setHeaderColor("secondary_bg_color");
-    Telegram.WebApp.expand();
+    Telegram.expand();
 
     const gameBoard = document.getElementById("game-board");
     const restartButton = document.getElementById("restart");
     const timerDisplay = document.getElementById("timer");
     const movesDisplay = document.getElementById("moves");
-    const difficultySelect = document.getElementById("difficulty");
+    const levelDisplay = document.getElementById("level-info");
 
-    let emojis = ["🍎", "🍌", "🍇", "🍓", "🥝", "🍊", "🍍", "🥑"];
-    let cards = [];
+    const allEmojis = ["🍎", "🍌", "🍇", "🍓", "🥝", "🍊", "🍍", "🥑", "🍉", "🥥", "🍋", "🍒", "🍔", "🍕", "🥗", "🍩", "🍫", "🧀", "🍪", "🥦"];
+    let emojis, cards;
     let flippedCards = [];
-    let matchedCards = [];
+    let matchedPairs = 0;
     let moves = 0;
+    let timeLeft;
     let timer;
-    let timeLeft = 60;
+    let level = 1;
+
+    function startTimer() {
+        clearInterval(timer);
+        timeLeft = Math.max(20, 60 - level * 2);
+        timerDisplay.textContent = `⏳ ${timeLeft}s`;
+        timer = setInterval(() => {
+            timeLeft--;
+            timerDisplay.textContent = `⏳ ${timeLeft}s`;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                Telegram.showAlert("⏳ Время вышло! Попробуйте снова.");
+                resetGame();
+            }
+        }, 1000);
+    }
 
     function shuffle(array) {
         return array.sort(() => Math.random() - 0.5);
     }
 
     function createBoard() {
-        clearInterval(timer);
-        timeLeft = 60;
-        timerDisplay.textContent = `Время: ${timeLeft}s`;
-        moves = 0;
-        movesDisplay.textContent = `Ходы: ${moves}`;
-        matchedCards = [];
-        flippedCards = [];
-
-        const difficulty = parseInt(difficultySelect.value);
-        cards = shuffle([...emojis.slice(0, difficulty), ...emojis.slice(0, difficulty)]);
-
         gameBoard.innerHTML = "";
+        matchedPairs = 0;
+        flippedCards = [];
+        moves = 0;
+        movesDisplay.textContent = `🔄 ${moves}`;
+        levelDisplay.textContent = `Уровень: ${level}`;
+
+        let difficulty = Math.min(4 + Math.floor(level / 2), 6);
+        emojis = allEmojis.slice(0, difficulty);
+        cards = shuffle([...emojis, ...emojis]);
+        gameBoard.style.gridTemplateColumns = `repeat(${difficulty >= 10 ? 5 : 4}, 1fr)`;
+
         cards.forEach((emoji, index) => {
             const card = document.createElement("div");
             card.classList.add("card");
@@ -55,42 +69,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (flippedCards.length === 2) {
                 moves++;
-                movesDisplay.textContent = `Ходы: ${moves}`;
-                setTimeout(checkMatch, 800);
+                movesDisplay.textContent = `🔄 ${moves}`;
+                setTimeout(checkMatch, 1000);
             }
         }
     }
 
     function checkMatch() {
         if (flippedCards[0].dataset.emoji === flippedCards[1].dataset.emoji) {
-            matchedCards.push(...flippedCards);
-            if (matchedCards.length === cards.length) {
+            matchedPairs++;
+            flippedCards = [];
+
+            if (matchedPairs === cards.length / 2) {
                 clearInterval(timer);
-                Telegram.WebApp.showAlert(`Поздравляем! Вы выиграли за ${moves} ходов! 🎉`);
+                if (level < 20) {
+                    Telegram.showAlert(`🎉 Уровень ${level} пройден!`);
+                    level++;
+                    setTimeout(createBoard, 1500);
+                } else {
+                    Telegram.showAlert("🏆 Вы прошли все 20 уровней! Поздравляем!");
+                }
             }
         } else {
             flippedCards.forEach(card => {
                 card.textContent = "";
                 card.classList.remove("flipped");
             });
+            flippedCards = [];
         }
-        flippedCards = [];
     }
 
-    function startTimer() {
-        timer = setInterval(() => {
-            timeLeft--;
-            timerDisplay.textContent = `Время: ${timeLeft}s`;
-            if (timeLeft === 0) {
-                clearInterval(timer);
-                Telegram.WebApp.showAlert("Время вышло! 😢 Попробуйте снова.");
-                createBoard();
-            }
-        }, 1000);
+    function resetGame() {
+        level = 1;
+        createBoard();
     }
 
-    restartButton.addEventListener("click", createBoard);
-    difficultySelect.addEventListener("change", createBoard);
+    restartButton.addEventListener("click", resetGame);
 
     createBoard();
 });
